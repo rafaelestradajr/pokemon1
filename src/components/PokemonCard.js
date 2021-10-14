@@ -1,4 +1,5 @@
 import React from "react";
+import {Link} from 'react-router-dom';
 import {
   Card,
   CardContent,
@@ -32,6 +33,9 @@ const useStyles = makeStyles((theme) => ({
   },
   CardContent:{
       textAlign:'center'
+  },
+  link:{
+    textDecoration:'none'
   }
 }));
 
@@ -42,12 +46,15 @@ function PokemonCard(props) {
   const { id, name } = pokemon;
   return (
     <Grid item xs={12} sm={2}>
+      <Link to={'/pokemon/' + id} className={classes.link} >
+      
       <Card className={classes.card}>
         <CardMedia className={classes.cardMedia} image={image}></CardMedia>
         <CardContent className={classes.CardContent}>
           <Typography>{name}</Typography>
         </CardContent>
       </Card>
+      </Link>
     </Grid>
   );
 }
