@@ -11,6 +11,8 @@ import {
 
 import { POKEMON_APP_URL } from "../config";
 import FavoriteIcon from "@material-ui/icons/Favorite";
+import { connect } from "react-redux";
+import { toggleFavorite } from "../redux/actions";
 
 const styles = (theme) => ({
   pokedexContainer: {
@@ -67,11 +69,22 @@ class PokemonDetails extends Component {
       }
     });
   }
+  favoriteChecker(pokemon) {
+    let found = false
+    this.props.favorites?.map((p) => {
+      if (p.id === pokemon.id) {
+        found = true;
+      }
+    })
+    return found;
+  }
+
   render() {
+    console.log(this.props.favorites);
     const { classes } = this.props;
     const { pokemon } = this.state;
     if (pokemon) {
-      const { name, sprites,height,weight,types } = pokemon;
+      const { name, sprites, height, weight, types } = pokemon;
       return (
         <Box>
           <Box className={classes.pokedexContainer}>
@@ -87,10 +100,19 @@ class PokemonDetails extends Component {
               <hr className={classes.separator} />
               <Grid container>
                 <Grid item md={1}>
-                  <Button className={classes.favorite}>
-                    <FavoriteIcon style={{ color: "white", fontSize: 45 }} />
+                  <Button
+                    className={classes.favorite}
+                    onClick={() => this.props.toggleFavorite(pokemon)}>
+                 
+                    <FavoriteIcon
+                      style={{
+                        color: this.favoriteChecker(pokemon) ? "red" : "white",
+                        fontSize: 50,
+                      }}
+                    />
                   </Button>
                 </Grid>
+
                 <Grid item md={2}>
                   <Typography className={classes.text}>
                     Name
@@ -98,7 +120,6 @@ class PokemonDetails extends Component {
                     {name}
                   </Typography>
                 </Grid>
-
 
                 <Grid item md={2}>
                   <Typography className={classes.text}>
@@ -114,25 +135,18 @@ class PokemonDetails extends Component {
                     {weight}lbs
                   </Typography>
                 </Grid>
-                    {types.map((pokemonType) =>{
-                const  {name}= pokemonType.type
-                return(
+                {types.map((pokemonType) => {
+                  const { name } = pokemonType.type;
+                  return (
                     <Grid item md={2}>
-                        <Typography className={classes.text}>
-                            
-                            Type
-                            <br/>
-                            {name}
-
-                        </Typography>
-                    
+                      <Typography className={classes.text}>
+                        Type
+                        <br />
+                        {name}
+                      </Typography>
                     </Grid>
-                )
-                
-
-                    })}
-
-                
+                  );
+                })}
               </Grid>
             </Box>
           </Box>
@@ -144,4 +158,14 @@ class PokemonDetails extends Component {
   }
 }
 
-export default withStyles(styles)(PokemonDetails);
+const mapStateToProps = (state) => ({
+  favorites: state.favorites
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  toggleFavorite: (pokemon) => dispatch(toggleFavorite(pokemon)),
+});
+
+export default withStyles(styles)(
+  connect(mapStateToProps, mapDispatchToProps)(PokemonDetails)
+);
